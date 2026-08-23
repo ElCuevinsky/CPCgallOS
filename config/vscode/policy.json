@@ -1,0 +1,19 @@
+{
+  "AllowedExtensions": {
+    "*": false,
+    "ms-vscode.cpptools": "stable",
+    "ms-python.python": "stable",
+    "ms-python.debugpy": "stable",
+    "redhat.java": "stable",
+    "vscjava.vscode-java-debug": "stable"
+  },
+  "EnableTelemetry": false,
+  "EnableFeedback": false,
+  "ExtensionsAutoUpdate": false,
+  "UpdateMode": "none",
+  "ChatAgentMode": false,
+  "ChatHooks": false,
+  "ChatAgentExtensionTools": false,
+  "BrowserChatTools": false,
+  "ChatPluginsEnabled": false
+}

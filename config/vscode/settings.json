@@ -1,0 +1,14 @@
+{
+  "chat.disableAIFeatures": true,
+  "extensions.autoCheckUpdates": false,
+  "extensions.autoUpdate": false,
+  "telemetry.telemetryLevel": "off",
+  "update.mode": "none",
+  "workbench.startupEditor": "none",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "C_Cpp.default.cppStandard": "c++17",
+  "C_Cpp.default.cStandard": "c17",
+  "C_Cpp.default.compilerPath": "/usr/bin/g++",
+  "java.jdt.ls.java.home": "/usr/lib/jvm/default-java",
+  "python.defaultInterpreterPath": "/usr/bin/python3"
+}

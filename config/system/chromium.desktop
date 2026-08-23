@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Chromium
+Comment=Navegador autorizado de CPCgallOS
+Exec=/snap/bin/chromium %U
+Terminal=false
+Type=Application
+Icon=chromium
+Categories=Network;WebBrowser;
+MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;

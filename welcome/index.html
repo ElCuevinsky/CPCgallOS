@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bienvenida a CPCgallOS</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, Ubuntu, sans-serif; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center;
+      color: #f3f3f3; background: linear-gradient(145deg, #17191c, #3c4045); }
+    main { width: min(880px, calc(100% - 48px)); padding: 42px;
+      border: 1px solid #666b70; border-radius: 18px; background: #25282ccc;
+      box-shadow: 0 24px 70px #0008; }
+    header { display: flex; gap: 24px; align-items: center; }
+    header img { width: 112px; height: 112px; object-fit: contain; background: white;
+      border-radius: 12px; }
+    h1 { margin: 0 0 8px; font-size: clamp(2rem, 5vw, 3.5rem); }
+    .tagline { color: #c8ccd0; font-size: 1.1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px; margin-top: 32px; }
+    section { padding: 20px; border-radius: 12px; background: #34383d; }
+    h2 { margin-top: 0; font-size: 1.1rem; color: #fff; }
+    code { color: #fff; background: #16181a; padding: 3px 7px; border-radius: 5px; }
+    a { color: #fff; }
+    footer { margin-top: 28px; color: #aeb3b8; font-size: .92rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img src="../branding/gallos.jpeg" alt="Logo de CPC Gallos">
+      <div>
+        <h1>CPCgallOS</h1>
+        <div class="tagline">Entorno oficial de práctica de CPC Gallos</div>
+      </div>
+    </header>
+    <div class="grid">
+      <section>
+        <h2>C++</h2>
+        <p>Compila con <code>g++ -std=c++17 -O2 -Wall main.cpp</code>.</p>
+        <p>Depura desde VS Code, Code::Blocks o con <code>gdb</code>.</p>
+      </section>
+      <section>
+        <h2>Java</h2>
+        <p>Usa <code>javac Main.java</code> y <code>java Main</code>.</p>
+      </section>
+      <section>
+        <h2>Python</h2>
+        <p>Ejecuta soluciones con <code>python3 main.py</code>.</p>
+      </section>
+      <section>
+        <h2>Modos de arranque</h2>
+        <p><strong>Competencia:</strong> los cambios desaparecen al reiniciar.</p>
+        <p><strong>Persistente:</strong> requiere autenticación administrativa.</p>
+      </section>
+    </div>
+    <footer>Chromium solo permite los jueces y sitios aprobados por CPC Gallos.</footer>
+  </main>
+</body>
+</html>

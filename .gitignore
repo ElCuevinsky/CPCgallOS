@@ -1,0 +1,7 @@
+/.cache/
+/.secrets/
+/out/
+/work/
+*.iso
+*.iso.zsync
+*.log

@@ -1,0 +1,29 @@
+# Entorno de compilación y depuración
+build-essential
+g++
+gdb
+
+# Java y Python soportados por Ubuntu 26.04
+default-jdk
+python3
+python3-pip
+python3-venv
+
+# Único IDE adicional a Visual Studio Code
+codeblocks
+
+# Utilidades mínimas
+ca-certificates
+curl
+git
+gnupg
+less
+rsync
+unzip
+wget
+
+# Gráficos y detección de hardware
+linux-firmware
+mesa-utils
+mesa-vulkan-drivers
+nvidia-prime

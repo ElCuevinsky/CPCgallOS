@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Bienvenida a CPCgallOS
+Comment=Guía rápida del entorno de programación competitiva
+Exec=chromium file:///usr/share/cpcgallos/welcome/index.html
+Icon=/usr/share/cpcgallos/branding/gallos.jpeg
+Terminal=false
+Categories=Development;Education;

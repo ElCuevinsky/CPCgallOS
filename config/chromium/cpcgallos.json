@@ -1,0 +1,30 @@
+{
+  "BrowserSignin": 0,
+  "DeveloperToolsAvailability": 2,
+  "IncognitoModeAvailability": 1,
+  "MetricsReportingEnabled": false,
+  "PasswordManagerEnabled": false,
+  "PromptForDownloadLocation": true,
+  "URLBlocklist": [
+    "*"
+  ],
+  "URLAllowlist": [
+    "about:*",
+    "blob:*",
+    "chrome://*",
+    "data:*",
+    "file://*",
+    "codeforces.com",
+    "codeforces.org",
+    "icpc.global",
+    "icpc.foundation",
+    "icpcmexico.org",
+    "omegaup.com",
+    "omegaup.org",
+    "omegaup.github.io",
+    "vjudge.net",
+    "onlinegdb.com",
+    "usaco.org",
+    "usaco.guide"
+  ]
+}

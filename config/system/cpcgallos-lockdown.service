@@ -1,0 +1,12 @@
+[Unit]
+Description=CPCgallOS live-session lockdown
+After=casper.service snapd.seeded.service
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/cpcgallos-lockdown
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

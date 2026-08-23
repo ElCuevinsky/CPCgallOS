@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -eu
+
+for account in cpcgallos ubuntu xubuntu; do
+    if id "$account" >/dev/null 2>&1; then
+        gpasswd --delete "$account" sudo >/dev/null 2>&1 || true
+        gpasswd --delete "$account" admin >/dev/null 2>&1 || true
+    fi
+done
+
+rm -f /etc/sudoers.d/casper
+passwd --lock root >/dev/null 2>&1 || true
+
+if command -v snap >/dev/null 2>&1; then
+    timeout 15 snap refresh --hold=forever >/dev/null 2>&1 || true
+fi

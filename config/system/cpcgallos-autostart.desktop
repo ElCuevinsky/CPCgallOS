@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Bienvenida a CPCgallOS
+Exec=chromium file:///usr/share/cpcgallos/welcome/index.html
+OnlyShowIn=XFCE;
+X-GNOME-Autostart-enabled=true
+Terminal=false

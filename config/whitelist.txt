@@ -1,0 +1,14 @@
+# Un dominio por línea. Los subdominios están incluidos por las reglas de
+# Chromium cuando el filtro no comienza con punto.
+codeforces.com
+codeforces.org
+icpc.global
+icpc.foundation
+icpcmexico.org
+omegaup.com
+omegaup.org
+omegaup.github.io
+vjudge.net
+onlinegdb.com
+usaco.org
+usaco.guide
