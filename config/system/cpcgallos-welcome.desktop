@@ -2,7 +2,7 @@
 Type=Application
 Name=Bienvenida a CPCgallOS
 Comment=Guía rápida del entorno de programación competitiva
-Exec=chromium file:///usr/share/cpcgallos/welcome/index.html
+Exec=/usr/local/bin/cpcgallos-session-init
 Icon=/usr/share/cpcgallos/branding/gallos.jpeg
 Terminal=false
 Categories=Development;Education;

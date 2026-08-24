@@ -1,6 +1,9 @@
 {
   "BrowserSignin": 0,
   "DeveloperToolsAvailability": 2,
+  "ExtensionInstallBlocklist": [
+    "*"
+  ],
   "IncognitoModeAvailability": 1,
   "MetricsReportingEnabled": false,
   "PasswordManagerEnabled": false,
@@ -9,22 +12,20 @@
     "*"
   ],
   "URLAllowlist": [
-    "about:*",
-    "blob:*",
     "chrome://*",
-    "data:*",
     "file://*",
-    "codeforces.com",
-    "codeforces.org",
-    "icpc.global",
-    "icpc.foundation",
-    "icpcmexico.org",
-    "omegaup.com",
-    "omegaup.org",
-    "omegaup.github.io",
-    "vjudge.net",
-    "onlinegdb.com",
-    "usaco.org",
-    "usaco.guide"
+    "file:///*",
+    "[*.]codeforces.com",
+    "[*.]codeforces.org",
+    "[*.]icpc.global",
+    "[*.]icpc.foundation",
+    "[*.]icpcmexico.org",
+    "[*.]omegaup.com",
+    "[*.]omegaup.org",
+    "[*.]omegaup.github.io",
+    "[*.]vjudge.net",
+    "[*.]onlinegdb.com",
+    "[*.]usaco.org",
+    "[*.]usaco.guide"
   ]
 }

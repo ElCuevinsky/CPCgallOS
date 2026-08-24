@@ -24,7 +24,8 @@ output_iso="$out_dir/$OUTPUT_ISO_NAME"
 
 mkdir -p "$cache_dir" "$work_dir" "$out_dir"
 
-for command in curl xorriso unsquashfs mksquashfs rsync sha256sum snap; do
+for command in chroot curl mount xorriso unsquashfs mksquashfs rsync \
+    sha256sum snap; do
     command -v "$command" >/dev/null || {
         echo "Falta la herramienta requerida: $command" >&2
         exit 1
@@ -85,6 +86,12 @@ rsync -a "$project_root/config" "$project_root/assets" "$project_root/welcome" \
     "$chroot_dir/tmp/cpcgallos/"
 install -m 0755 "$project_root/scripts/chroot-customize.sh" \
     "$chroot_dir/tmp/cpcgallos/chroot-customize.sh"
+resolv_backup="$chroot_dir/etc/resolv.conf.cpcgallos-original"
+resolv_existed=false
+if [[ -e "$chroot_dir/etc/resolv.conf" || -L "$chroot_dir/etc/resolv.conf" ]]; then
+    cp -a -- "$chroot_dir/etc/resolv.conf" "$resolv_backup"
+    resolv_existed=true
+fi
 cp -L --remove-destination /etc/resolv.conf "$chroot_dir/etc/resolv.conf"
 
 for source in /dev /dev/pts /proc /sys /run; do
@@ -97,16 +104,51 @@ done
 chroot "$chroot_dir" /usr/bin/env \
     NVIDIA_DRIVER_PACKAGE="$NVIDIA_DRIVER_PACKAGE" \
     /bin/bash /tmp/cpcgallos/chroot-customize.sh
+
+mapfile -t kernel_versions < <(
+    find "$chroot_dir/lib/modules" -mindepth 1 -maxdepth 1 -type d \
+        -printf '%f\n' | sort -V
+)
+if ((${#kernel_versions[@]} != 1)); then
+    echo "Se esperaba exactamente un kernel en la imagen." >&2
+    exit 1
+fi
+kernel_version=${kernel_versions[0]}
+install -m 0644 "$chroot_dir/boot/initrd.img-$kernel_version" \
+    "$iso_tree/casper/initrd"
+install -m 0644 "$chroot_dir/boot/vmlinuz-$kernel_version" \
+    "$iso_tree/casper/vmlinuz"
+
+# Casper genera un UUID nuevo dentro de cada initramfs y solo acepta medios
+# cuyo marcador .disk coincida. Sincroniza ambos y comprueba además que la
+# referencia a la antigua capa live ya no esté presente.
+initrd_probe=/tmp/cpcgallos-initrd-probe
+rm -rf -- "$chroot_dir$initrd_probe"
+install -m 0644 "$iso_tree/casper/initrd" \
+    "$chroot_dir/tmp/cpcgallos-initrd"
+chroot "$chroot_dir" unmkinitramfs /tmp/cpcgallos-initrd "$initrd_probe"
+grep -q '^LAYERFS_PATH=$' \
+    "$chroot_dir$initrd_probe/conf/conf.d/default-layer.conf"
+install -m 0644 "$chroot_dir$initrd_probe/conf/uuid.conf" \
+    "$iso_tree/.disk/casper-uuid-generic"
+rm -rf -- "$chroot_dir$initrd_probe"
+rm -f -- "$chroot_dir/tmp/cpcgallos-initrd"
+rm -f -- "$chroot_dir/boot/initrd.img-$kernel_version"
+rm -f -- "$chroot_dir/etc/resolv.conf"
+if [[ "$resolv_existed" == true ]]; then
+    mv -- "$resolv_backup" "$chroot_dir/etc/resolv.conf"
+fi
 cleanup_mounts
 mount_points=()
 
-"$project_root/scripts/seed-snap.sh" "$chroot_dir" chromium
+"$project_root/scripts/seed-snap.sh" \
+    "$chroot_dir" "$project_root/config/snaps.list"
 "$project_root/scripts/configure-boot.sh" \
     "$iso_tree" "$project_root/config/grub/grub.cfg.in" \
     "$CPCGALLOS_GRUB_PASSWORD_HASH"
 
-# Conserva el kernel de la ISO base. El driver NVIDIA queda dentro del squashfs;
-# una prueba de Secure Boot forma parte de la matriz obligatoria del prototipo.
+# El kernel firmado y su initramfs regenerado quedan sincronizados con el
+# sistema raíz. Secure Boot y NVIDIA físico siguen en la matriz posterior.
 rm -f "$squashfs"
 if [[ -f "$live_layer" ]]; then
     rm -f "$live_layer" \
@@ -138,7 +180,10 @@ cp "$iso_tree/casper/${squashfs_stem}.manifest" \
 if [[ -f "$iso_tree/md5sum.txt" ]]; then
     (
         cd "$iso_tree"
-        find . -type f ! -name md5sum.txt -print0 \
+        # xorriso actualiza la Boot Info Table de esta imagen al grabar la ISO,
+        # por lo que su MD5 previo al repaquetado nunca puede coincidir.
+        find . -type f ! -name md5sum.txt \
+            ! -path './boot/grub/i386-pc/eltorito.img' -print0 \
             | sort -z \
             | xargs -0 md5sum
     ) > "$iso_tree/md5sum.txt"
@@ -151,5 +196,8 @@ xorriso -indev "$base_iso" -outdev "$output_iso" \
     -update_r "$iso_tree" / \
     -commit
 
-sha256sum "$output_iso" | tee "$output_iso.sha256"
+(
+    cd "$out_dir"
+    sha256sum "$OUTPUT_ISO_NAME"
+) | tee "$output_iso.sha256"
 echo "ISO creada: $output_iso"

@@ -1,0 +1,62 @@
+#!/bin/sh
+set -eu
+
+user_assets="$HOME/CPCgallOS"
+wallpaper="$user_assets/cpcgallos-wallpaper.png"
+install -d -m 0755 "$user_assets/branding" "$user_assets/welcome"
+cp -a /usr/share/cpcgallos/branding/. "$user_assets/branding/"
+cp -a /usr/share/cpcgallos/welcome/. "$user_assets/welcome/"
+install -m 0644 /usr/share/backgrounds/cpcgallos/cpcgallos-wallpaper.png \
+    "$wallpaper"
+
+set_wallpaper() {
+    attempt=0
+    while [ "$attempt" -lt 60 ]; do
+        properties=$(xfconf-query -c xfce4-desktop -l 2>/dev/null || true)
+        if printf '%s\n' "$properties" | grep -q '/last-image$'; then
+            # XFCE crea las propiedades antes de terminar de cargar el perfil
+            # inicial y puede sobrescribir un cambio aplicado inmediatamente.
+            sleep 5
+            properties=$(xfconf-query -c xfce4-desktop -l 2>/dev/null || true)
+            printf '%s\n' "$properties" | while IFS= read -r property; do
+                case "$property" in
+                    */last-image)
+                        xfconf-query -c xfce4-desktop -p "$property" -s "$wallpaper"
+                        ;;
+                    */image-style)
+                        xfconf-query -c xfce4-desktop -p "$property" -s 5
+                        ;;
+                esac
+            done
+            xrandr --listmonitors 2>/dev/null | awk 'NR > 1 { print $NF }' \
+                | while IFS= read -r monitor; do
+                    [ -n "$monitor" ] || continue
+                    prefix="/backdrop/screen0/monitor${monitor}/workspace0"
+                    if xfconf-query -c xfce4-desktop \
+                        -p "$prefix/last-image" >/dev/null 2>&1; then
+                        xfconf-query -c xfce4-desktop \
+                            -p "$prefix/last-image" -s "$wallpaper"
+                    else
+                        xfconf-query -c xfce4-desktop \
+                            -p "$prefix/last-image" -n -t string -s "$wallpaper"
+                    fi
+                    if xfconf-query -c xfce4-desktop \
+                        -p "$prefix/image-style" >/dev/null 2>&1; then
+                        xfconf-query -c xfce4-desktop \
+                            -p "$prefix/image-style" -s 5
+                    else
+                        xfconf-query -c xfce4-desktop \
+                            -p "$prefix/image-style" -n -t int -s 5
+                    fi
+                done
+            xfdesktop --reload >/dev/null 2>&1 || true
+            return
+        fi
+        attempt=$((attempt + 1))
+        sleep 1
+    done
+}
+
+set_wallpaper
+
+exec chromium "file://$user_assets/welcome/index.html"

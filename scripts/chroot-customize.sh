@@ -7,10 +7,38 @@ export LC_ALL=C
 payload=/tmp/cpcgallos
 nvidia_package=${NVIDIA_DRIVER_PACKAGE:-nvidia-driver-580-open}
 
+# La ISO live publica un origen file:///cdrom que no existe dentro del chroot.
+if [[ -f /etc/apt/sources.list.d/cdrom.sources ]]; then
+    mv /etc/apt/sources.list.d/cdrom.sources \
+        /etc/apt/sources.list.d/cdrom.sources.disabled
+fi
+if [[ -f /etc/apt/sources.list ]]; then
+    sed -i -E '/^[^#].*(cdrom:|file:\/{2,3}cdrom)/s/^/# /' \
+        /etc/apt/sources.list
+fi
+
 apt-get update
 mapfile -t packages < <(sed -E '/^[[:space:]]*(#|$)/d' "$payload/config/packages.list")
 apt-get install -y --no-install-recommends "${packages[@]}"
 apt-get install -y "$nvidia_package"
+
+# OpenJDK 25 de resolute no localiza libjli.so mediante su RPATH en el chroot.
+cat >/etc/ld.so.conf.d/cpcgallos-java.conf <<'EOF'
+/usr/lib/jvm/default-java/lib
+EOF
+ldconfig
+javac -version
+java -version
+
+# Algunos postinst consultan uname y generan un initrd del kernel anfitrión
+# WSL. Solo se conserva material de kernels que existan dentro de la imagen.
+host_kernel=$(uname -r)
+if [[ ! -d "/lib/modules/$host_kernel" ]]; then
+    rm -f -- "/boot/initrd.img-$host_kernel" \
+        "/boot/vmlinuz-$host_kernel" "/boot/config-$host_kernel" \
+        "/boot/System.map-$host_kernel"
+fi
+
 apt-get purge -y firefox update-manager || true
 
 install -d -m 0755 /etc/apt/keyrings
@@ -34,10 +62,35 @@ install -m 0644 "$payload/config/vscode/settings.json" /etc/skel/.config/Code/Us
 
 while IFS= read -r extension; do
     [[ -z "$extension" || "$extension" == \#* ]] && continue
-    HOME=/etc/skel code --no-sandbox --user-data-dir=/tmp/vscode-profile \
+    DONT_PROMPT_WSL_INSTALL=1 HOME=/etc/skel \
+        code --no-sandbox --user-data-dir=/tmp/vscode-profile \
         --extensions-dir=/etc/skel/.vscode/extensions \
         --install-extension "$extension" --force
 done < "$payload/config/vscode/extensions.list"
+
+expected_extensions=$(mktemp)
+installed_extensions=$(mktemp)
+sed -E '/^[[:space:]]*(#|$)/d' "$payload/config/vscode/extensions.list" \
+    | sort -u > "$expected_extensions"
+DONT_PROMPT_WSL_INSTALL=1 HOME=/etc/skel \
+    code --no-sandbox --user-data-dir=/tmp/vscode-profile \
+    --extensions-dir=/etc/skel/.vscode/extensions \
+    --list-extensions | sort -u > "$installed_extensions"
+diff -u "$expected_extensions" "$installed_extensions"
+rm -f -- "$expected_extensions" "$installed_extensions"
+
+python3 - /etc/vscode/policy.json \
+    /usr/share/code/resources/app/policies/policy.json <<'PY'
+import json
+from pathlib import Path
+import sys
+
+configured = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+supported = json.loads(Path(sys.argv[2]).read_text(encoding="utf-8"))
+unknown = sorted(set(configured) - set(supported))
+if unknown:
+    raise SystemExit(f"Políticas de VS Code no soportadas: {', '.join(unknown)}")
+PY
 
 install -d -m 0755 \
     /etc/chromium-browser/policies/managed \
@@ -52,6 +105,13 @@ install -m 0644 "$payload/assets/branding/gallos.jpeg" \
     /usr/share/cpcgallos/branding/gallos.jpeg
 install -m 0644 "$payload/assets/branding/cpcgallos-wallpaper.png" \
     /usr/share/backgrounds/cpcgallos/cpcgallos-wallpaper.png
+# Xfdesktop 4.20 usa esta ruta compilada como fallback cuando el identificador
+# del monitor todavía no tiene propiedades en xfconf. Se conserva el nombre
+# esperado por Xubuntu, pero el contenido pasa a ser el fondo de CPCgallOS.
+install -m 0644 "$payload/assets/branding/cpcgallos-wallpaper.png" \
+    /usr/share/xfce4/backdrops/cpcgallos-wallpaper.png
+ln -sfn cpcgallos-wallpaper.png \
+    /usr/share/xfce4/backdrops/xubuntu-wallpaper.png
 cp -a "$payload/welcome/." /usr/share/cpcgallos/welcome/
 install -m 0644 "$payload/config/system/chromium.desktop" \
     /usr/share/applications/chromium.desktop
@@ -59,6 +119,8 @@ install -m 0644 "$payload/config/system/cpcgallos-welcome.desktop" \
     /usr/share/applications/cpcgallos-welcome.desktop
 install -m 0644 "$payload/config/system/cpcgallos-autostart.desktop" \
     /etc/xdg/autostart/cpcgallos-welcome.desktop
+install -m 0755 "$payload/config/system/cpcgallos-session-init" \
+    /usr/local/bin/cpcgallos-session-init
 
 install -m 0755 "$payload/config/system/cpcgallos-lockdown" \
     /usr/local/sbin/cpcgallos-lockdown
@@ -92,6 +154,24 @@ cat >/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<'EOF
   </property>
 </channel>
 EOF
+
+# La ISO base usa dos SquashFS y fija la capa superior en el initramfs. El
+# prototipo las consolida en minimal.squashfs, por lo que Casper debe volver al
+# descubrimiento normal de la única imagen disponible.
+cat >/etc/initramfs-tools/conf.d/default-layer.conf <<'EOF'
+LAYERFS_PATH=
+EOF
+mapfile -t kernel_versions < <(
+    find /lib/modules -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort -V
+)
+if ((${#kernel_versions[@]} != 1)); then
+    echo "Se esperaba exactamente un kernel instalable; encontrados: ${kernel_versions[*]}" >&2
+    exit 1
+fi
+kernel_version=${kernel_versions[0]}
+rm -f -- "/boot/initrd.img-$kernel_version"
+update-initramfs -c -k "$kernel_version"
+test -s "/boot/initrd.img-$kernel_version"
 
 apt-get clean
 rm -rf /tmp/vscode-profile /var/lib/apt/lists/* /tmp/cpcgallos

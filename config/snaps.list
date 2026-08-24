@@ -1,0 +1,12 @@
+# Chromium y todas las bases/proveedores de contenido que requiere el canal
+# stable actual. snap prepare-image valida este conjunto antes de sembrarlo.
+snapd
+bare
+core18
+core22
+core24
+gtk-common-themes
+gnome-46-2404
+mesa-2404
+cups
+chromium

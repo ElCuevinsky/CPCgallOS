@@ -2,82 +2,70 @@
 set -Eeuo pipefail
 
 if [[ $# -ne 2 ]]; then
-    echo "Uso: $0 <raíz-del-chroot> <snap>" >&2
+    echo "Uso: $0 <raíz-del-chroot> <lista-de-snaps>" >&2
     exit 2
 fi
 
 chroot_dir=$1
-snap_name=$2
+snap_list=$2
 seed_dir="$chroot_dir/var/lib/snapd/seed"
-download_dir=$(mktemp -d)
-trap 'rm -rf -- "$download_dir"' EXIT
+model_assertion="$seed_dir/assertions/model"
+prepared_dir=$(mktemp -d)
+trap 'rm -rf -- "$prepared_dir"' EXIT
 
-mkdir -p "$seed_dir/snaps" "$seed_dir/assertions"
-(
-    cd "$download_dir"
-    snap download "$snap_name" --channel=latest/stable
-)
+[[ -s "$model_assertion" ]] || {
+    echo "La imagen base no contiene la assertion de modelo de snapd." >&2
+    exit 1
+}
+[[ -s "$snap_list" ]] || {
+    echo "Falta la lista de snaps: $snap_list" >&2
+    exit 1
+}
 
-snap_file=$(find "$download_dir" -maxdepth 1 -type f -name "${snap_name}_*.snap" -print -quit)
-assert_file=$(find "$download_dir" -maxdepth 1 -type f -name "${snap_name}_*.assert" -print -quit)
+prepare_args=(--classic --arch=amd64)
+while IFS= read -r snap_spec; do
+    [[ -z "$snap_spec" || "$snap_spec" == \#* ]] && continue
+    prepare_args+=(--snap="$snap_spec")
+done < "$snap_list"
 
-if [[ -z "$snap_file" || -z "$assert_file" ]]; then
-    echo "No se pudo descargar el snap y su assertion: $snap_name" >&2
+snap prepare-image "${prepare_args[@]}" \
+    "$model_assertion" "$prepared_dir"
+prepared_seed="$prepared_dir/var/lib/snapd/seed"
+
+[[ -s "$prepared_seed/seed.yaml" ]] || {
+    echo "snap prepare-image no produjo una semilla válida." >&2
+    exit 1
+}
+rg -q '^[[:space:]-]*name:[[:space:]]+chromium$' \
+    "$prepared_seed/seed.yaml" || {
+    echo "La semilla preparada no contiene Chromium." >&2
+    exit 1
+}
+if rg -q 'name:[[:space:]]+(firefox|snap-store|ubuntu-desktop-bootstrap)$' \
+    "$prepared_seed/seed.yaml"; then
+    echo "La semilla preparada contiene software excluido." >&2
     exit 1
 fi
 
-install -m 0644 "$snap_file" "$seed_dir/snaps/"
-install -m 0644 "$assert_file" "$seed_dir/assertions/"
+# La base live ya trae snaps de instalación montados. Se elimina su estado
+# instalado completo; snapd reconstruirá únicamente la semilla aprobada en el
+# primer arranque.
+rm -rf -- "$chroot_dir/var/lib/snapd" "$chroot_dir/var/cache/snapd" \
+    "$chroot_dir/var/snap" "$chroot_dir/snap"
+find "$chroot_dir/etc/systemd/system" -type f -o -type l \
+    | while IFS= read -r unit; do
+        case "${unit##*/}" in
+            snap-*.mount|snap.*.service) rm -f -- "$unit" ;;
+        esac
+    done
 
-python3 - "$seed_dir/seed.yaml" "$snap_name" "$(basename "$snap_file")" <<'PY'
-from pathlib import Path
-import sys
+mkdir -p "$seed_dir"
+rsync -a --delete "$prepared_seed/" "$seed_dir/"
+install -d -m 0755 "$chroot_dir/var/cache/snapd" \
+    "$chroot_dir/var/snap" "$chroot_dir/snap"
 
-path = Path(sys.argv[1])
-name = sys.argv[2]
-filename = sys.argv[3]
-lines = path.read_text(encoding="utf-8").splitlines()
-
-preamble = []
-entries = []
-current = []
-for line in lines:
-    if line == "  -":
-        if current:
-            entries.append(current)
-        current = [line]
-    elif current:
-        current.append(line)
-    else:
-        preamble.append(line)
-if current:
-    entries.append(current)
-
-remove = {name, "firefox", "snap-store", "ubuntu-desktop-bootstrap"}
-entries = [entry for entry in entries if not any(
-    line.strip().startswith("name:") and line.split(":", 1)[1].strip() in remove
-    for line in entry
-)]
-entries.append([
-    "  -",
-    f"    name: {name}",
-    "    channel: latest/stable",
-    f"    file: {filename}",
-])
-
-output = preamble[:]
-for entry in entries:
-    output.extend(entry)
-path.write_text("\n".join(output) + "\n", encoding="utf-8")
-PY
-
-find "$seed_dir/snaps" -maxdepth 1 -type f \( \
-    -name 'firefox_*.snap' -o \
-    -name 'snap-store_*.snap' -o \
-    -name 'ubuntu-desktop-bootstrap_*.snap' \
-\) -delete
-find "$seed_dir/assertions" -maxdepth 1 -type f \( \
-    -name 'firefox_*.assert' -o \
-    -name 'snap-store_*.assert' -o \
-    -name 'ubuntu-desktop-bootstrap_*.assert' \
-\) -delete
+if find "$chroot_dir/var/lib/snapd" "$chroot_dir/etc/systemd/system" \
+    -iname '*ubuntu*desktop*bootstrap*' -print -quit | grep -q .; then
+    echo "Persisten archivos del instalador snap excluido." >&2
+    exit 1
+fi
