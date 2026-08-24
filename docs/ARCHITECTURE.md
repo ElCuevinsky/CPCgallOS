@@ -4,7 +4,7 @@
 Xubuntu 26.04 Minimal oficial
         |
         v
-extracción ISO + squashfs
+extracción ISO + overlay de las dos capas squashfs
         |
         +--> paquetes: G++, GDB, JDK, Python, Code::Blocks, VS Code
         +--> snap sembrado: Chromium
@@ -15,6 +15,11 @@ extracción ISO + squashfs
         v
 ISO híbrida CPCgallOS (BIOS + UEFI)
 ```
+
+La vista combinada de `minimal.squashfs` y `minimal.live.squashfs` se consolida
+en una sola imagen. El initramfs se regenera para que Casper no vuelva a buscar
+la capa superior retirada, y el UUID del initramfs se copia al marcador de la
+ISO antes del repaquetado.
 
 El modo competencia usa `nopersistent`: el overlay vive en RAM y se descarta al
 reiniciar. El modo persistente usa `persistent` y busca una partición compatible

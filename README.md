@@ -4,7 +4,8 @@ CPCgallOS es un sistema live para programación competitiva del club CPC
 Gallos. Arranca desde USB, copia el sistema a RAM y ofrece un entorno uniforme
 con C++, Java y Python.
 
-> Estado: prototipo `0.1.0`. Todavía requiere pruebas en hardware real antes de
+> Estado: el prototipo arrancable `0.1.0` fue construido y verificado en QEMU
+> el 23 de agosto de 2026. Todavía requiere pruebas en hardware real antes de
 > utilizarse en una competencia oficial.
 
 ## Alcance del prototipo
@@ -27,9 +28,9 @@ con C++, Java y Python.
 
 ## Construcción rápida
 
-Requisitos: Docker, al menos 35 GB libres y conexión a Internet. La compilación
-descarga la ISO oficial y paquetes, por lo que puede tardar bastante la primera
-vez.
+Requisitos: Docker, al menos 35 GB libres, 16 GB de RAM recomendados y conexión
+a Internet. La compilación descarga la ISO oficial y paquetes, por lo que puede
+tardar bastante la primera vez.
 
 ```bash
 make password
@@ -39,6 +40,19 @@ make build
 
 La ISO resultante se escribe en `out/CPCgallOS-0.1.0-amd64.iso`. La contraseña
 no se guarda en Git ni dentro de los scripts.
+
+## Resultado verificado de 0.1.0
+
+- Tamaño: 5,382,668,288 bytes (5.01 GiB).
+- SHA-256: `5c3a4dc595182742a8b4aff30a13983b80c480143609b3e83181b727b432a266`.
+- Arranque híbrido BIOS/UEFI y escritorio XFCE comprobados en QEMU.
+- 12 GB de RAM es el mínimo práctico observado para la VM; se recomiendan
+  16 GB por el uso obligatorio de `toram`.
+- Una USB de 32 GB deja espacio holgado para la ISO y una futura partición de
+  persistencia.
+
+Los detalles, versiones y límites de la prueba están en
+[docs/BUILD-REPORT-0.1.0.md](docs/BUILD-REPORT-0.1.0.md).
 
 Para comprobar la estructura sin construir varios gigabytes:
 

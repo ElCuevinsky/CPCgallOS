@@ -24,3 +24,21 @@ No publiques una versión para competencia hasta completar esta matriz.
 Para una primera prueba virtual se recomienda QEMU/KVM con UEFI y 16 GB de RAM.
 La validación de BIOS debe hacerse además en hardware real, porque una VM no
 reproduce firmware escolar antiguo.
+
+## Resultado del prototipo 0.1.0
+
+La imagen del 23 de agosto de 2026 se verificó estáticamente y arrancó en QEMU
+con BIOS heredado y OVMF/UEFI. La VM usó 12 GB de RAM, cuatro CPU virtuales y
+emulación TCG; por no disponer de KVM, el primer arranque tardó alrededor de
+10–13 minutos mientras `toram` y el sembrado inicial de snaps terminaban.
+
+Pasaron las siguientes pruebas: checksum externo e interno, dos entradas GRUB
+exactas con `toram`, autenticación PBKDF2 en el modo persistente, estructura
+híbrida MBR/GPT/El Torito, escritorio XFCE, bienvenida, compilación y ejecución
+de C++/Java/Python, IDEs, extensiones exactas, políticas de Chromium y VS Code,
+semilla exacta de snaps, ausencia del instalador/Firefox/tienda y presencia de
+los módulos NVIDIA.
+
+Siguen pendientes las pruebas en USB física, persistencia real entre reinicios,
+Secure Boot, firmware BIOS escolar y tarjetas RTX 5060/5070. La presencia de
+módulos NVIDIA en el SquashFS no equivale a validar ese hardware.
