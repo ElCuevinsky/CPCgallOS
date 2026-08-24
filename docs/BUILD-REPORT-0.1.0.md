@@ -6,7 +6,7 @@ Fecha: 23 de agosto de 2026.
 
 - Archivo: `out/CPCgallOS-0.1.0-amd64.iso`.
 - Tamaño: 5,382,668,288 bytes (5.01 GiB).
-- SHA-256: `5c3a4dc595182742a8b4aff30a13983b80c480143609b3e83181b727b432a266`.
+- SHA-256: `f0d18fa36f3212b276baaadf472faa11c19a983141a372665a4178023ecc3dba`.
 - SquashFS: 4,003.77 MiB, XZ, bloque de 1 MiB, 46.29 % del tamaño sin
   comprimir.
 - ISO base oficial: `xubuntu-26.04-minimal-amd64.iso`, 3,225,190,400 bytes.

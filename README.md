@@ -44,7 +44,7 @@ no se guarda en Git ni dentro de los scripts.
 ## Resultado verificado de 0.1.0
 
 - Tamaño: 5,382,668,288 bytes (5.01 GiB).
-- SHA-256: `5c3a4dc595182742a8b4aff30a13983b80c480143609b3e83181b727b432a266`.
+- SHA-256: `f0d18fa36f3212b276baaadf472faa11c19a983141a372665a4178023ecc3dba`.
 - Arranque híbrido BIOS/UEFI y escritorio XFCE comprobados en QEMU.
 - 12 GB de RAM es el mínimo práctico observado para la VM; se recomiendan
   16 GB por el uso obligatorio de `toram`.
