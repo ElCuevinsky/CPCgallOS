@@ -7,11 +7,14 @@ export LC_ALL=C
 payload=/tmp/cpcgallos
 nvidia_package=${NVIDIA_DRIVER_PACKAGE:-nvidia-driver-580-open}
 
-# La ISO live publica un origen file:///cdrom que no existe dentro del chroot.
+# The minimal base image ships an offline CD-ROM source. The ISO contents are
+# already unpacked into the chroot, so leaving this source enabled makes APT
+# fail before it can use the Ubuntu mirrors.
 if [[ -f /etc/apt/sources.list.d/cdrom.sources ]]; then
     mv /etc/apt/sources.list.d/cdrom.sources \
         /etc/apt/sources.list.d/cdrom.sources.disabled
 fi
+rm -f /etc/apt/sources.list.d/cdrom.list
 if [[ -f /etc/apt/sources.list ]]; then
     sed -i -E '/^[^#].*(cdrom:|file:\/{2,3}cdrom)/s/^/# /' \
         /etc/apt/sources.list
