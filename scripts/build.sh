@@ -151,10 +151,19 @@ mount_points=()
 # sistema raíz. Secure Boot y NVIDIA físico siguen en la matriz posterior.
 rm -f "$squashfs"
 if [[ -f "$live_layer" ]]; then
-    # casper's initramfs requires the live layer to be present even though the
-    # build customizes the merged filesystem and repacks the base layer.
-    # Keep the original layer and its metadata in the final ISO.
-    :
+    # casper's initramfs requires the live layer to be present. The original
+    # layer also contains the installer's old snap state, which would shadow
+    # the curated seed copied into the repacked base layer. Keep the required
+    # path, but make the layer empty because its contents were merged already.
+    empty_layer_dir="$layer_dir/empty-live"
+    mkdir -p "$empty_layer_dir"
+    rm -f "$live_layer"
+    mksquashfs "$empty_layer_dir" "$live_layer" \
+        -comp xz \
+        -processors "$BUILD_CPUS" \
+        -mem "$SQUASHFS_MEMORY" \
+        -no-progress \
+        -noappend
 fi
 mksquashfs "$chroot_dir" "$squashfs" \
     -comp xz \

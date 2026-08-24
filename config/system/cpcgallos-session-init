@@ -41,4 +41,13 @@ set_wallpaper() {
 
 set_wallpaper || true
 
-exec chromium "file://$user_assets/welcome/index.html"
+if command -v snap >/dev/null 2>&1; then
+    timeout 600 sh -c \
+        'until snap list chromium >/dev/null 2>&1; do sleep 2; done' || true
+fi
+
+if [ -x /snap/bin/chromium ]; then
+    exec /snap/bin/chromium "file://$user_assets/welcome/index.html"
+fi
+
+exit 0
