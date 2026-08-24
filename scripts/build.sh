@@ -151,14 +151,10 @@ mount_points=()
 # sistema raíz. Secure Boot y NVIDIA físico siguen en la matriz posterior.
 rm -f "$squashfs"
 if [[ -f "$live_layer" ]]; then
-    rm -f "$live_layer" \
-        "$iso_tree/casper/${squashfs_stem}.live.manifest" \
-        "$iso_tree/casper/${squashfs_stem}.live.manifest.full" \
-        "$iso_tree/casper/${squashfs_stem}.live.size"
-    if [[ -f "$iso_tree/casper/install-sources.yaml" ]]; then
-        sed -i 's/type: fsimage-layered/type: fsimage/' \
-            "$iso_tree/casper/install-sources.yaml"
-    fi
+    # casper's initramfs requires the live layer to be present even though the
+    # build customizes the merged filesystem and repacks the base layer.
+    # Keep the original layer and its metadata in the final ISO.
+    :
 fi
 mksquashfs "$chroot_dir" "$squashfs" \
     -comp xz \
