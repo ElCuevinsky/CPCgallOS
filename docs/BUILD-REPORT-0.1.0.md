@@ -6,7 +6,7 @@ Fecha de la reconstrucción: 24 de agosto de 2026.
 
 - Archivo: `out/CPCgallOS-0.1.0-amd64.iso`.
 - Tamaño: 5,382,733,824 bytes (5.01 GiB).
-- SHA-256: `b2e9fe2fa6806d03ea9717f1cd0822ed3aa184a44794a77736ed8e6b6a1737ef`.
+- SHA-256: `48028d9b72119e248cb4304109c27da8dfeeddbe8155ac0f5947b4b1ab53c0e7`.
 - SquashFS: 4,003.77 MiB, XZ, bloque de 1 MiB, 46.29 % del tamaño sin
   comprimir.
 - ISO base oficial: `xubuntu-26.04-minimal-amd64.iso`, 3,225,190,400 bytes.
@@ -32,8 +32,9 @@ excluido de Git.
 - Exactamente dos modos GRUB, ambos con `toram`; competencia usa
   `nopersistent` y persistente usa `persistent`, `--users root` y PBKDF2.
 - Ninguna opción visible de instalación.
-- Initramfs sin la antigua capa `minimal.live.squashfs` y UUID de Casper
-  sincronizado.
+- Initramfs y UUID de Casper sincronizados; `minimal.live.squashfs` se conserva
+  como capa vacía de aproximadamente 0.16 KiB para evitar que Casper rechace la
+  imagen, mientras el contenido real vive en `minimal.squashfs`.
 - C++ compilado y ejecutado con G++ 15.2; GDB 17.1 presente.
 - Java compilado y ejecutado con OpenJDK/Javac 25.0.3.
 - Python 3.14.4 ejecutado.

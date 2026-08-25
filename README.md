@@ -47,7 +47,7 @@ no se guarda en Git ni dentro de los scripts.
 ## Resultado verificado de 0.1.0
 
 - Tamaño: 5,382,733,824 bytes (5.01 GiB).
-- SHA-256: `b2e9fe2fa6806d03ea9717f1cd0822ed3aa184a44794a77736ed8e6b6a1737ef`.
+- SHA-256: `48028d9b72119e248cb4304109c27da8dfeeddbe8155ac0f5947b4b1ab53c0e7`.
 - Arranque BIOS y escritorio XFCE comprobados en VirtualBox; UEFI alcanzó el
   arranque gráfico de Xubuntu.
 - 12 GB de RAM es el mínimo práctico observado para la VM; se recomiendan
