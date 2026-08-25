@@ -1,12 +1,12 @@
 # Informe de construcción 0.1.0
 
-Fecha: 23 de agosto de 2026.
+Fecha de la reconstrucción: 24 de agosto de 2026.
 
 ## Artefacto
 
 - Archivo: `out/CPCgallOS-0.1.0-amd64.iso`.
-- Tamaño: 5,382,668,288 bytes (5.01 GiB).
-- SHA-256: `f0d18fa36f3212b276baaadf472faa11c19a983141a372665a4178023ecc3dba`.
+- Tamaño: 5,382,733,824 bytes (5.01 GiB).
+- SHA-256: `b2e9fe2fa6806d03ea9717f1cd0822ed3aa184a44794a77736ed8e6b6a1737ef`.
 - SquashFS: 4,003.77 MiB, XZ, bloque de 1 MiB, 46.29 % del tamaño sin
   comprimir.
 - ISO base oficial: `xubuntu-26.04-minimal-amd64.iso`, 3,225,190,400 bytes.
@@ -44,12 +44,22 @@ excluido de Git.
 - Chromium está sembrado como snap junto con sus nueve dependencias aprobadas;
   no quedan snaps preinstalados fuera de esa semilla.
 - Política de Chromium con bloqueo predeterminado, lista permitida y bloqueo de
-  todas las extensiones.
+  todas las extensiones. La lista contiene exactamente los 26 dominios de
+  `config/whitelist.txt`, incluidos jueces, plataformas y documentación de CP.
+- Plantillas de VS Code para C++, Java y Python con tareas de compilación y
+  depuración; la plantilla C++ enlaza explícitamente el mismo label de tarea
+  desde `launch.json` y `tasks.json`.
+- Accesos directos de Chromium, VS Code, Code::Blocks y plantilla C++ copiados al
+  escritorio del usuario live.
 - Wallpaper, logo y bienvenida instalados; el inicializador los copia al
   directorio personal para que Chromium snap pueda leerlos.
 - Firefox, tienda, accesos de instalación y `ubuntu-desktop-bootstrap` ausentes.
 - Kernel 7.0.0-14 y siete módulos `nvidia*.ko.zst` presentes.
-- QEMU BIOS y QEMU OVMF/UEFI alcanzaron XFCE y Chromium.
+- VirtualBox BIOS (4 GB RAM, 2 CPU, VMSVGA, sin 3D, paravirtualización None y
+  USB Tablet) alcanzó XFCE, wallpaper, bienvenida y los cuatro accesos directos.
+- En Chromium, `chrome://policy` mostró `URLAllowlist` en estado `OK`; Codeforces
+  cargó y Stack Overflow fue bloqueado. UEFI en VirtualBox alcanzó el splash
+  gráfico de Xubuntu; no se esperó el escritorio completo en esa segunda VM.
 
 ## Requisitos y límites observados
 
@@ -58,9 +68,10 @@ El archivo cabe holgadamente en una USB de 32 GB. Por el uso obligatorio de
 recomendación de ejecución. Equipos con 8 GB deben probarse explícitamente y no
 se consideran validados.
 
-QEMU funcionó con emulación TCG y CPU `qemu64`. El modelo `max` produjo una
-traza del kernel propia de esa combinación de emulación y no se usó para la
-validación. El primer arranque en TCG tardó alrededor de 10–13 minutos.
+El primer arranque en VirtualBox tardó aproximadamente 5–6 minutos con 4 GB y
+2 CPU, principalmente por `toram` y el sembrado inicial de snaps. VirtualBox
+mostró el aviso `vmwgfx: unsupported hypervisor`; se documenta como limitación
+del adaptador virtual, no como validación o fallo de NVIDIA.
 
 No se han validado todavía una USB física, la conservación real de persistencia,
 Secure Boot, equipos escolares antiguos ni NVIDIA RTX 5060/5070. La whitelist

@@ -97,13 +97,18 @@ PY
 
 install -d -m 0755 \
     /etc/chromium-browser/policies/managed \
+    /etc/chromium/policies/managed \
     /usr/share/cpcgallos/branding \
     /usr/share/cpcgallos/welcome \
+    /usr/share/cpcgallos/templates \
+    /usr/share/cpcgallos/desktop \
     /usr/share/backgrounds/cpcgallos \
     /etc/xdg/autostart \
     /usr/share/applications
 install -m 0644 "$payload/config/chromium/cpcgallos.json" \
     /etc/chromium-browser/policies/managed/cpcgallos.json
+install -m 0644 "$payload/config/chromium/cpcgallos.json" \
+    /etc/chromium/policies/managed/cpcgallos.json
 install -m 0644 "$payload/assets/branding/gallos.jpeg" \
     /usr/share/cpcgallos/branding/gallos.jpeg
 install -m 0644 "$payload/assets/branding/cpcgallos-wallpaper.png" \
@@ -116,6 +121,10 @@ install -m 0644 "$payload/assets/branding/cpcgallos-wallpaper.png" \
 ln -sfn cpcgallos-wallpaper.png \
     /usr/share/xfce4/backdrops/xubuntu-wallpaper.png
 cp -a "$payload/welcome/." /usr/share/cpcgallos/welcome/
+cp -a "$payload/config/vscode/templates/." /usr/share/cpcgallos/templates/
+for desktop_file in "$payload"/config/system/cpcgallos-desktop-*.desktop; do
+    install -m 0755 "$desktop_file" /usr/share/cpcgallos/desktop/
+done
 install -m 0644 "$payload/config/system/chromium.desktop" \
     /usr/share/applications/chromium.desktop
 install -m 0644 "$payload/config/system/cpcgallos-welcome.desktop" \

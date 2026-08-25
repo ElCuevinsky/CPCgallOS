@@ -1,0 +1,1 @@
+print("CPCgallOS Python OK")

@@ -4,8 +4,8 @@ CPCgallOS es un sistema live para programación competitiva del club CPC
 Gallos. Arranca desde USB, copia el sistema a RAM y ofrece un entorno uniforme
 con C++, Java y Python.
 
-> Estado: el prototipo arrancable `0.1.0` fue construido y verificado en QEMU
-> el 23 de agosto de 2026. Todavía requiere pruebas en hardware real antes de
+> Estado: el prototipo arrancable `0.1.0` fue construido y verificado en
+> VirtualBox el 24 de agosto de 2026. Todavía requiere pruebas en hardware real antes de
 > utilizarse en una competencia oficial.
 
 ## Alcance del prototipo
@@ -20,6 +20,9 @@ con C++, Java y Python.
 - Visual Studio Code y Code::Blocks como únicos IDE oficiales.
 - Extensiones de VS Code limitadas a C/C++, Python y Java.
 - Chromium con una lista administrada de sitios permitidos.
+- Whitelist de jueces, plataformas y documentación de programación competitiva
+  en [config/whitelist.txt](config/whitelist.txt); no incluye Stack Overflow,
+  GitHub, GitLab, YouTube ni buscadores generales.
 - Instalación de paquetes y actualizaciones automáticas bloqueadas para la
   sesión live.
 - NVIDIA 580 Open para probar RTX 5060/5070, además de Mesa y firmware de
@@ -43,9 +46,10 @@ no se guarda en Git ni dentro de los scripts.
 
 ## Resultado verificado de 0.1.0
 
-- Tamaño: 5,382,668,288 bytes (5.01 GiB).
-- SHA-256: `f0d18fa36f3212b276baaadf472faa11c19a983141a372665a4178023ecc3dba`.
-- Arranque híbrido BIOS/UEFI y escritorio XFCE comprobados en QEMU.
+- Tamaño: 5,382,733,824 bytes (5.01 GiB).
+- SHA-256: `b2e9fe2fa6806d03ea9717f1cd0822ed3aa184a44794a77736ed8e6b6a1737ef`.
+- Arranque BIOS y escritorio XFCE comprobados en VirtualBox; UEFI alcanzó el
+  arranque gráfico de Xubuntu.
 - 12 GB de RAM es el mínimo práctico observado para la VM; se recomiendan
   16 GB por el uso obligatorio de `toram`.
 - Una USB de 32 GB deja espacio holgado para la ISO y una futura partición de
@@ -53,6 +57,13 @@ no se guarda en Git ni dentro de los scripts.
 
 Los detalles, versiones y límites de la prueba están en
 [docs/BUILD-REPORT-0.1.0.md](docs/BUILD-REPORT-0.1.0.md).
+
+La sesión copia a `~/CPCgallOS/Plantillas` proyectos de ejemplo de C++, Java y
+Python. La plantilla C++ contiene `tasks.json` y `launch.json` con la misma
+etiqueta `CPCgallOS: g++ build active file`, evitando el bloqueo de
+`preLaunchTask`; VS Code inicia sin Restricted Mode para el workspace de
+práctica. También se instalan accesos directos de Chromium, VS Code, Code::Blocks
+y la plantilla C++ en el escritorio del usuario live.
 
 Para comprobar la estructura sin construir varios gigabytes:
 

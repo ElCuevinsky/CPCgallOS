@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Code::Blocks
+Comment=IDE para C++
+Exec=/usr/bin/codeblocks
+Icon=codeblocks
+Terminal=false
+Categories=Development;IDE;

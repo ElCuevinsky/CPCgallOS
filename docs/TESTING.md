@@ -25,19 +25,30 @@ Para una primera prueba virtual se recomienda QEMU/KVM con UEFI y 16 GB de RAM.
 La validación de BIOS debe hacerse además en hardware real, porque una VM no
 reproduce firmware escolar antiguo.
 
+Para VirtualBox en esta revisión se usa la configuración estable observada:
+4096 MB de RAM, 2 CPU, gráficos VMSVGA, 128 MB de VRAM, aceleración 3D
+desactivada, paravirtualización `None`, dispositivo señalador USB Tablet y la
+ISO conectada como unidad óptica. La VM de revisión no tiene disco virtual y no
+escribe ninguna USB.
+
 ## Resultado del prototipo 0.1.0
 
-La imagen del 23 de agosto de 2026 se verificó estáticamente y arrancó en QEMU
-con BIOS heredado y OVMF/UEFI. La VM usó 12 GB de RAM, cuatro CPU virtuales y
-emulación TCG; por no disponer de KVM, el primer arranque tardó alrededor de
-10–13 minutos mientras `toram` y el sembrado inicial de snaps terminaban.
+La imagen final del 24 de agosto de 2026 se verificó estáticamente y arrancó en
+VirtualBox con BIOS heredado usando la configuración estable indicada arriba.
+El primer arranque tardó aproximadamente 5–6 minutos mientras `toram` y el
+sembrado inicial de snaps terminaban. Una segunda VM con firmware EFI alcanzó
+el splash gráfico de Xubuntu.
 
 Pasaron las siguientes pruebas: checksum externo e interno, dos entradas GRUB
 exactas con `toram`, autenticación PBKDF2 en el modo persistente, estructura
 híbrida MBR/GPT/El Torito, escritorio XFCE, bienvenida, compilación y ejecución
 de C++/Java/Python, IDEs, extensiones exactas, políticas de Chromium y VS Code,
 semilla exacta de snaps, ausencia del instalador/Firefox/tienda y presencia de
-los módulos NVIDIA.
+los módulos NVIDIA. En la prueba interactiva final, `chrome://policy` indicó
+`URLAllowlist: OK`, Codeforces cargó y Stack Overflow fue bloqueado. La política
+contiene los 26 dominios de `config/whitelist.txt`; la plantilla C++ de VS Code
+tiene un `preLaunchTask` resuelto y accesos directos de escritorio para las
+herramientas principales.
 
 Siguen pendientes las pruebas en USB física, persistencia real entre reinicios,
 Secure Boot, firmware BIOS escolar y tarjetas RTX 5060/5070. La presencia de

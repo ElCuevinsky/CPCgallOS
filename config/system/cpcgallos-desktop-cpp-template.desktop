@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=CPCgallOS — plantilla C++
+Comment=Proyecto listo para compilar y depurar con G++ y GDB
+Exec=/usr/bin/code --reuse-window /home/cpcgallos/CPCgallOS/Plantillas/cpp
+Icon=code
+Terminal=false
+Categories=Development;Education;

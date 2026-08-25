@@ -21,6 +21,10 @@ required=(
     config/vscode/settings.json
     config/grub/grub.cfg.in
     config/system/cpcgallos-session-init
+    config/system/cpcgallos-desktop-chromium.desktop
+    config/system/cpcgallos-desktop-vscode.desktop
+    config/system/cpcgallos-desktop-codeblocks.desktop
+    config/system/cpcgallos-desktop-cpp-template.desktop
     assets/branding/gallos.jpeg
     assets/branding/cpcgallos-wallpaper.png
 )
@@ -28,6 +32,24 @@ required=(
 for path in "${required[@]}"; do
     [[ -s "$path" ]] || {
         echo "Falta o está vacío: $path" >&2
+        exit 1
+    }
+done
+
+template_files=(
+    config/vscode/templates/cpp/.vscode/tasks.json
+    config/vscode/templates/cpp/.vscode/launch.json
+    config/vscode/templates/cpp/main.cpp
+    config/vscode/templates/java/.vscode/tasks.json
+    config/vscode/templates/java/.vscode/launch.json
+    config/vscode/templates/java/Main.java
+    config/vscode/templates/python/.vscode/tasks.json
+    config/vscode/templates/python/.vscode/launch.json
+    config/vscode/templates/python/main.py
+)
+for path in "${template_files[@]}"; do
+    [[ -s "$path" ]] || {
+        echo "Falta la plantilla de VS Code: $path" >&2
         exit 1
     }
 done
@@ -55,18 +77,14 @@ if rg -n '(PASSWORD|TOKEN|SECRET)=' \
     exit 1
 fi
 
-expected_domains=$(sed -E '/^[[:space:]]*(#|$)/d' config/whitelist.txt | sort)
-for domain in $expected_domains; do
-    jq -e --arg domain "[*.]$domain" '.URLAllowlist | index($domain) != null' \
-        config/chromium/cpcgallos.json >/dev/null || {
-        echo "Dominio ausente de la política Chromium: $domain" >&2
-        exit 1
-    }
-done
+sed -E '/^[[:space:]]*(#|$)/d' config/whitelist.txt | sort > /tmp/cpcgallos-domains.expected
+jq -r '.URLAllowlist[] | select(test("^[a-z0-9.-]+\\.[a-z]{2,}$"))' config/chromium/cpcgallos.json | sort \
+    > /tmp/cpcgallos-domains.actual
+diff -u /tmp/cpcgallos-domains.expected /tmp/cpcgallos-domains.actual
+rm -f /tmp/cpcgallos-domains.expected /tmp/cpcgallos-domains.actual
 
-jq -e '.URLBlocklist == ["*"] and
+jq -e '.URLBlocklist == ["http://*", "https://*"] and
     .ExtensionInstallBlocklist == ["*"] and
-    (.URLAllowlist | index("file://*") != null) and
     (.URLAllowlist | index("file:///*") != null)' \
     config/chromium/cpcgallos.json >/dev/null || {
     echo "Las políticas de bloqueo de Chromium no son las esperadas." >&2
@@ -84,6 +102,15 @@ jq -e '.ExtensionsAutoUpdate == "off" and .TelemetryLevel == "off" and
     echo "Las políticas de bloqueo de VS Code no son las esperadas." >&2
     exit 1
 }
+jq -e '."security.workspace.trust.enabled" == false' \
+    config/vscode/settings.json >/dev/null || {
+    echo "VS Code debe iniciar sin Restricted Mode por confianza de workspace." >&2
+    exit 1
+}
+jq -e '.tasks | any(.[]; .label == "CPCgallOS: g++ build active file")' \
+    config/vscode/templates/cpp/.vscode/tasks.json >/dev/null
+jq -e '.configurations | any(.[]; .preLaunchTask == "CPCgallOS: g++ build active file")' \
+    config/vscode/templates/cpp/.vscode/launch.json >/dev/null
 
 [[ $(rg -c '^menuentry ' config/grub/grub.cfg.in) -eq 2 ]] || {
     echo "El menú GRUB debe contener exactamente dos entradas." >&2

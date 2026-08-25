@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Visual Studio Code
+Comment=Editor para C++, Java y Python
+Exec=/usr/bin/code --reuse-window
+Icon=code
+Terminal=false
+Categories=Development;IDE;

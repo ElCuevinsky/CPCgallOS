@@ -3,11 +3,22 @@ set -eu
 
 user_assets="$HOME/CPCgallOS"
 wallpaper="$user_assets/cpcgallos-wallpaper.png"
-install -d -m 0755 "$user_assets/branding" "$user_assets/welcome"
+desktop_dir=$(xdg-user-dir DESKTOP 2>/dev/null || printf '%s\n' "$HOME/Desktop")
+install -d -m 0755 "$user_assets/branding" "$user_assets/welcome" \
+    "$user_assets/Plantillas" "$desktop_dir"
 cp -a /usr/share/cpcgallos/branding/. "$user_assets/branding/"
 cp -a /usr/share/cpcgallos/welcome/. "$user_assets/welcome/"
+cp -a /usr/share/cpcgallos/templates/. "$user_assets/Plantillas/"
+cp -a /usr/share/cpcgallos/desktop/. "$desktop_dir/"
 install -m 0644 /usr/share/backgrounds/cpcgallos/cpcgallos-wallpaper.png \
     "$wallpaper"
+
+# Chromium es un Snap en Xubuntu 26.04. Esta ruta de política pertenece al
+# perfil del usuario y se crea después de que snapd haya preparado el entorno.
+chromium_user_policy_dir="$HOME/snap/chromium/common/chromium/Default/policies/managed"
+install -d -m 0755 "$chromium_user_policy_dir"
+install -m 0644 /etc/chromium-browser/policies/managed/cpcgallos.json \
+    "$chromium_user_policy_dir/cpcgallos.json"
 
 set_wallpaper() {
     properties=$(xfconf-query -c xfce4-desktop -l 2>/dev/null || true)
