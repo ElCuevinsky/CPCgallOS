@@ -38,7 +38,9 @@ PBKDF2, teclado `latam`, CPH, herramientas, `concursos`, Bloc de notas y
 Calculadora. Chromium no tiene whitelist en esta revisión, aunque continúa
 bloqueando la instalación de extensiones no aprobadas.
 
-La escritura a USB no se completó porque Windows canceló la elevación UAC.
+La ISO fue escrita en la Kingston `Disk 2` con código de salida 0. La lectura
+completa de vuelta y el arranque desde USB física siguen pendientes porque
+Windows canceló la UAC del verificador.
 
 ## Resultado histórico del prototipo 0.1.0
 

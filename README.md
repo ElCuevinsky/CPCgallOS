@@ -6,8 +6,8 @@ con C++, Java y Python.
 
 > Estado: el prototipo arrancable `0.1.1` incorpora los cambios de teclado,
 > CPH y accesos directos solicitados. Fue construido y verificado
-> estáticamente el 25 de agosto de 2026; falta la prueba de arranque desde USB
-> física porque Windows canceló la elevación UAC. Todavía requiere pruebas en
+> estáticamente el 25 de agosto de 2026 y fue escrito en la Kingston `Disk 2`;
+> falta la prueba de arranque desde USB física. Todavía requiere pruebas en
 > hardware real antes de utilizarse en una competencia oficial.
 
 ## Alcance del prototipo
@@ -59,8 +59,9 @@ no se guarda en Git ni dentro de los scripts.
   herramientas solicitadas.
 - Chromium no tiene whitelist en esta revisión; conserva el bloqueo de
   extensiones no aprobadas.
-- La ISO está en `outputs/CPCgallOS-0.1.1-amd64.iso` para probarla en
-  VirtualBox. No se flasheó la USB porque Windows canceló la elevación UAC.
+- La ISO está en `outputs/CPCgallOS-0.1.1-amd64.iso` y fue escrita en la
+  Kingston `Disk 2` con código de salida 0. La lectura completa de vuelta y
+  el arranque físico quedan pendientes.
 
 El detalle reproducible está en
 [docs/BUILD-REPORT-0.1.1.md](docs/BUILD-REPORT-0.1.1.md).

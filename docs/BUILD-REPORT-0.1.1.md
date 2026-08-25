@@ -41,8 +41,9 @@ Fecha: 25 de agosto de 2026
 
 ## Pendiente
 
-La escritura a la Kingston DataTraveler identificada como Windows `Disk 2`
-no se completó: Windows canceló dos veces la elevación UAC antes de iniciar el
-flasheador. La USB no fue borrada ni modificada en esta sesión. Tampoco se
-declaran validados arranque físico, persistencia real, Secure Boot o NVIDIA
+La ISO se escribió en la Kingston DataTraveler identificada como Windows
+`Disk 2` y el flasheador terminó con código 0. La lectura completa de vuelta
+no se pudo ejecutar porque Windows canceló la UAC del verificador; por ello no
+se declara una verificación byte a byte. Tampoco se declaran validados arranque
+físico, persistencia real, Secure Boot o NVIDIA
 RTX 5060/5070; deben probarse fuera de la VM.
