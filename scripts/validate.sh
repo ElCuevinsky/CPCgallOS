@@ -25,6 +25,10 @@ required=(
     config/system/cpcgallos-desktop-vscode.desktop
     config/system/cpcgallos-desktop-codeblocks.desktop
     config/system/cpcgallos-desktop-cpp-template.desktop
+    config/system/cpcgallos-desktop-notepad.desktop
+    config/system/cpcgallos-desktop-calculator.desktop
+    config/system/default-keyboard
+    config/system/xfce4-keyboard-layout.xml
     assets/branding/gallos.jpeg
     assets/branding/cpcgallos-wallpaper.png
 )
@@ -77,17 +81,10 @@ if rg -n '(PASSWORD|TOKEN|SECRET)=' \
     exit 1
 fi
 
-sed -E '/^[[:space:]]*(#|$)/d' config/whitelist.txt | sort > /tmp/cpcgallos-domains.expected
-jq -r '.URLAllowlist[] | select(test("^[a-z0-9.-]+\\.[a-z]{2,}$"))' config/chromium/cpcgallos.json | sort \
-    > /tmp/cpcgallos-domains.actual
-diff -u /tmp/cpcgallos-domains.expected /tmp/cpcgallos-domains.actual
-rm -f /tmp/cpcgallos-domains.expected /tmp/cpcgallos-domains.actual
-
-jq -e '.URLBlocklist == ["http://*", "https://*"] and
-    .ExtensionInstallBlocklist == ["*"] and
-    (.URLAllowlist | index("file:///*") != null)' \
+jq -e '.URLBlocklist == null and .URLAllowlist == null and
+    .ExtensionInstallBlocklist == ["*"]' \
     config/chromium/cpcgallos.json >/dev/null || {
-    echo "Las políticas de bloqueo de Chromium no son las esperadas." >&2
+    echo "Chromium no debe tener una whitelist ni una URLBlocklist activa." >&2
     exit 1
 }
 
@@ -130,5 +127,16 @@ rg -q 'update-initramfs -c -k' scripts/chroot-customize.sh
 rg -q 'boot/initrd.img-' scripts/build.sh
 rg -q 'casper-uuid-generic' scripts/build.sh
 rg -q "! -path './boot/grub/i386-pc/eltorito.img'" scripts/build.sh
+rg -q 'XKBLAYOUT="latam"' config/system/default-keyboard
+rg -q 'DivyanshuAgrawal\.competitive-programming-helper' config/vscode/extensions.list
+rg -q 'Desktop/concursos' config/system/cpcgallos-desktop-cpp-template.desktop
+rg -q 'mousepad' config/system/cpcgallos-desktop-notepad.desktop
+rg -q 'galculator' config/system/cpcgallos-desktop-calculator.desktop
+for package in galculator keyboard-configuration mousepad x11-xkb-utils xkb-data; do
+    rg -q "^[[:space:]]*${package}[[:space:]]*$" config/packages.list || {
+        echo "Falta el paquete requerido: ${package}" >&2
+        exit 1
+    }
+done
 
 echo "Validación estática completada correctamente."

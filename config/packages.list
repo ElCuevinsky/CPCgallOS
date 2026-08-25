@@ -14,6 +14,8 @@ codeblocks
 
 # Utilidades mínimas
 ca-certificates
+galculator
+keyboard-configuration
 curl
 git
 gnupg
@@ -24,6 +26,9 @@ wget
 
 # Gráficos y detección de hardware
 linux-firmware
+mousepad
 mesa-utils
 mesa-vulkan-drivers
 nvidia-prime
+x11-xkb-utils
+xkb-data

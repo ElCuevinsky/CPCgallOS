@@ -62,6 +62,10 @@ install -d -m 0755 /etc/vscode
 install -m 0644 "$payload/config/vscode/policy.json" /etc/vscode/policy.json
 install -d -m 0755 /etc/skel/.config/Code/User /etc/skel/.vscode/extensions
 install -m 0644 "$payload/config/vscode/settings.json" /etc/skel/.config/Code/User/settings.json
+install -m 0644 "$payload/config/system/default-keyboard" /etc/default/keyboard
+install -d -m 0755 /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml
+install -m 0644 "$payload/config/system/xfce4-keyboard-layout.xml" \
+    /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml
 
 while IFS= read -r extension; do
     [[ -z "$extension" || "$extension" == \#* ]] && continue
@@ -74,11 +78,11 @@ done < "$payload/config/vscode/extensions.list"
 expected_extensions=$(mktemp)
 installed_extensions=$(mktemp)
 sed -E '/^[[:space:]]*(#|$)/d' "$payload/config/vscode/extensions.list" \
-    | sort -u > "$expected_extensions"
+    | tr '[:upper:]' '[:lower:]' | sort -u > "$expected_extensions"
 DONT_PROMPT_WSL_INSTALL=1 HOME=/etc/skel \
     code --no-sandbox --user-data-dir=/tmp/vscode-profile \
     --extensions-dir=/etc/skel/.vscode/extensions \
-    --list-extensions | sort -u > "$installed_extensions"
+    --list-extensions | tr '[:upper:]' '[:lower:]' | sort -u > "$installed_extensions"
 diff -u "$expected_extensions" "$installed_extensions"
 rm -f -- "$expected_extensions" "$installed_extensions"
 

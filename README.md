@@ -4,9 +4,11 @@ CPCgallOS es un sistema live para programación competitiva del club CPC
 Gallos. Arranca desde USB, copia el sistema a RAM y ofrece un entorno uniforme
 con C++, Java y Python.
 
-> Estado: el prototipo arrancable `0.1.0` fue construido y verificado en
-> VirtualBox el 24 de agosto de 2026. Todavía requiere pruebas en hardware real antes de
-> utilizarse en una competencia oficial.
+> Estado: el prototipo arrancable `0.1.1` incorpora los cambios de teclado,
+> CPH y accesos directos solicitados. Fue construido y verificado
+> estáticamente el 25 de agosto de 2026; falta la prueba de arranque desde USB
+> física porque Windows canceló la elevación UAC. Todavía requiere pruebas en
+> hardware real antes de utilizarse en una competencia oficial.
 
 ## Alcance del prototipo
 
@@ -18,11 +20,15 @@ con C++, Java y Python.
   administrativo `root`.
 - GCC/G++, GDB, JDK predeterminado de Ubuntu y Python 3.
 - Visual Studio Code y Code::Blocks como únicos IDE oficiales.
-- Extensiones de VS Code limitadas a C/C++, Python y Java.
-- Chromium con una lista administrada de sitios permitidos.
-- Whitelist de jueces, plataformas y documentación de programación competitiva
-  en [config/whitelist.txt](config/whitelist.txt); no incluye Stack Overflow,
-  GitHub, GitLab, YouTube ni buscadores generales.
+- Extensiones de VS Code limitadas a C/C++, Python, Java y Competitive
+  Programming Helper (CPH).
+- Chromium sin whitelist por ahora; conserva únicamente el bloqueo de
+  instalación de extensiones no aprobadas.
+- Teclado predeterminado en español latinoamericano (`latam`), sin cambiar el
+  idioma de la interfaz.
+- Carpeta de plantillas de C++, Java y Python en el escritorio, como
+  `concursos`.
+- Accesos directos visibles para Bloc de notas y Calculadora.
 - Instalación de paquetes y actualizaciones automáticas bloqueadas para la
   sesión live.
 - NVIDIA 580 Open para probar RTX 5060/5070, además de Mesa y firmware de
@@ -41,8 +47,23 @@ export CPCGALLOS_GRUB_PASSWORD_HASH='grub.pbkdf2.sha512.10000....'
 make build
 ```
 
-La ISO resultante se escribe en `out/CPCgallOS-0.1.0-amd64.iso`. La contraseña
+La ISO resultante se escribe en `out/CPCgallOS-0.1.1-amd64.iso`. La contraseña
 no se guarda en Git ni dentro de los scripts.
+
+## Resultado construido de 0.1.1
+
+- Tamaño: 5,385,158,656 bytes (5.02 GB; 5.015 GiB).
+- SHA-256: `37f50d71a5b1de4d10779755e581e8df7ef8b483dcdb503b18eced091f83b1c7`.
+- La inspección de la ISO confirmó arranque BIOS/UEFI, las dos entradas GRUB
+  exactas con `toram`, PBKDF2 para `root`, teclado `latam`, CPH y las
+  herramientas solicitadas.
+- Chromium no tiene whitelist en esta revisión; conserva el bloqueo de
+  extensiones no aprobadas.
+- La ISO está en `outputs/CPCgallOS-0.1.1-amd64.iso` para probarla en
+  VirtualBox. No se flasheó la USB porque Windows canceló la elevación UAC.
+
+El detalle reproducible está en
+[docs/BUILD-REPORT-0.1.1.md](docs/BUILD-REPORT-0.1.1.md).
 
 ## Resultado verificado de 0.1.0
 
@@ -58,12 +79,12 @@ no se guarda en Git ni dentro de los scripts.
 Los detalles, versiones y límites de la prueba están en
 [docs/BUILD-REPORT-0.1.0.md](docs/BUILD-REPORT-0.1.0.md).
 
-La sesión copia a `~/CPCgallOS/Plantillas` proyectos de ejemplo de C++, Java y
-Python. La plantilla C++ contiene `tasks.json` y `launch.json` con la misma
+La sesión copia al escritorio la carpeta `concursos`, con proyectos de ejemplo
+de C++, Java y Python. La plantilla C++ contiene `tasks.json` y `launch.json` con la misma
 etiqueta `CPCgallOS: g++ build active file`, evitando el bloqueo de
 `preLaunchTask`; VS Code inicia sin Restricted Mode para el workspace de
-práctica. También se instalan accesos directos de Chromium, VS Code, Code::Blocks
-y la plantilla C++ en el escritorio del usuario live.
+práctica. También se instalan accesos directos de Chromium, VS Code,
+Code::Blocks, Bloc de notas y Calculadora.
 
 Para comprobar la estructura sin construir varios gigabytes:
 
@@ -74,12 +95,11 @@ make validate
 Consulta [docs/BUILD.md](docs/BUILD.md), [docs/SECURITY.md](docs/SECURITY.md) y
 [docs/TESTING.md](docs/TESTING.md) antes de distribuir una imagen.
 
-## Advertencia sobre la whitelist
+## Estado de navegación
 
-El prototipo aplica la whitelist mediante políticas administradas de Chromium.
-Esto evita la navegación normal a sitios no aprobados, pero no es todavía un
-filtro completo de todo el tráfico de red del sistema. El firewall/proxy de
-egreso está programado para la siguiente etapa.
+Por ahora Chromium no aplica una whitelist de sitios. La política de
+extensiones permanece administrada para impedir instalaciones no aprobadas;
+esto no es un filtro de tráfico del sistema.
 
 ## Licencias
 

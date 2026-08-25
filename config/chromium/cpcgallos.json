@@ -7,37 +7,5 @@
   "IncognitoModeAvailability": 1,
   "MetricsReportingEnabled": false,
   "PasswordManagerEnabled": false,
-  "PromptForDownloadLocation": true,
-  "URLBlocklist": [
-    "http://*",
-    "https://*"
-  ],
-  "URLAllowlist": [
-    "chrome://*",
-    "file:///*",
-    "codeforces.com",
-    "codeforces.org",
-    "icpc.global",
-    "icpc.foundation",
-    "icpcmexico.org",
-    "icpcnews.com",
-    "omegaup.com",
-    "omegaup.org",
-    "omegaup.github.io",
-    "vjudge.net",
-    "onlinegdb.com",
-    "usaco.org",
-    "usaco.guide",
-    "atcoder.jp",
-    "codechef.com",
-    "csacademy.com",
-    "dmoj.ca",
-    "e-olymp.com",
-    "hackerrank.com",
-    "kattis.com",
-    "spoj.com",
-    "topcoder.com",
-    "cp-algorithms.com",
-    "cppreference.com"
-  ]
+  "PromptForDownloadLocation": true
 }

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Calculadora
+Comment=Calculadora de escritorio
+Exec=/usr/bin/galculator
+Icon=accessories-calculator
+Terminal=false
+Categories=Utility;Calculator;

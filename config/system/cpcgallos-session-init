@@ -5,13 +5,19 @@ user_assets="$HOME/CPCgallOS"
 wallpaper="$user_assets/cpcgallos-wallpaper.png"
 desktop_dir=$(xdg-user-dir DESKTOP 2>/dev/null || printf '%s\n' "$HOME/Desktop")
 install -d -m 0755 "$user_assets/branding" "$user_assets/welcome" \
-    "$user_assets/Plantillas" "$desktop_dir"
+    "$desktop_dir/concursos" "$desktop_dir"
 cp -a /usr/share/cpcgallos/branding/. "$user_assets/branding/"
 cp -a /usr/share/cpcgallos/welcome/. "$user_assets/welcome/"
-cp -a /usr/share/cpcgallos/templates/. "$user_assets/Plantillas/"
+cp -a /usr/share/cpcgallos/templates/. "$desktop_dir/concursos/"
 cp -a /usr/share/cpcgallos/desktop/. "$desktop_dir/"
 install -m 0644 /usr/share/backgrounds/cpcgallos/cpcgallos-wallpaper.png \
     "$wallpaper"
+
+# La distribución usa español latinoamericano como teclado predeterminado,
+# sin cambiar el idioma de la interfaz del sistema.
+if command -v setxkbmap >/dev/null 2>&1; then
+    setxkbmap -model pc105 -layout latam -variant '' -option '' || true
+fi
 
 # Chromium es un Snap en Xubuntu 26.04. Esta ruta de política pertenece al
 # perfil del usuario y se crea después de que snapd haya preparado el entorno.

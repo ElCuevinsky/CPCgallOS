@@ -11,8 +11,7 @@ No publiques una versión para competencia hasta completar esta matriz.
 | Modo competencia | Cambios eliminados tras reiniciar |
 | Modo persistente sin clave | GRUB niega el acceso |
 | Modo persistente con clave | Cambios conservados tras reiniciar |
-| Chromium, dominio permitido | La página carga |
-| Chromium, dominio no permitido | Chromium muestra bloqueo administrativo |
+| Chromium, cualquier sitio (0.1.1) | La política no aplica whitelist de sitios |
 | VS Code, extensión no aprobada | La instalación es rechazada |
 | `sudo`, PackageKit y tienda | El usuario no puede instalar paquetes |
 | C++ | Compila, ejecuta y depura con GDB |
@@ -31,7 +30,17 @@ desactivada, paravirtualización `None`, dispositivo señalador USB Tablet y la
 ISO conectada como unidad óptica. La VM de revisión no tiene disco virtual y no
 escribe ninguna USB.
 
-## Resultado del prototipo 0.1.0
+## Resultado del prototipo 0.1.1
+
+La ISO 0.1.1 se construyó el 25 de agosto de 2026 y pasó `make validate`.
+La inspección del ISO confirmó las entradas GRUB con `toram`, BIOS/UEFI,
+PBKDF2, teclado `latam`, CPH, herramientas, `concursos`, Bloc de notas y
+Calculadora. Chromium no tiene whitelist en esta revisión, aunque continúa
+bloqueando la instalación de extensiones no aprobadas.
+
+La escritura a USB no se completó porque Windows canceló la elevación UAC.
+
+## Resultado histórico del prototipo 0.1.0
 
 La imagen final del 24 de agosto de 2026 se verificó estáticamente y arrancó en
 VirtualBox con BIOS heredado usando la configuración estable indicada arriba.

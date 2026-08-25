@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Bloc de notas
+Comment=Editor de texto sencillo
+Exec=/usr/bin/mousepad
+Icon=accessories-text-editor
+Terminal=false
+Categories=Utility;TextEditor;
