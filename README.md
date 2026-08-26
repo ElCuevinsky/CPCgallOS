@@ -4,11 +4,12 @@ CPCgallOS es un sistema live para programación competitiva del club CPC
 Gallos. Arranca desde USB, copia el sistema a RAM y ofrece un entorno uniforme
 con C++, Java y Python.
 
-> Estado: el prototipo arrancable `0.1.1` incorpora los cambios de teclado,
-> CPH y accesos directos solicitados. Fue construido y verificado
-> estáticamente el 25 de agosto de 2026 y fue escrito en la Kingston `Disk 2`;
-> falta la prueba de arranque desde USB física. Todavía requiere pruebas en
-> hardware real antes de utilizarse en una competencia oficial.
+> Estado: el prototipo arrancable `0.1.2` incorpora el teclado latinoamericano,
+> CPH, los accesos directos solicitados y la contraseña administrativa de
+> prototipo. Esta revisión elimina el acceso directo separado de “Gallos C++”;
+> la carpeta de plantillas `concursos` se conserva. Requiere pruebas de
+> arranque en VirtualBox y hardware real antes de utilizarse en una competencia
+> oficial.
 
 ## Alcance del prototipo
 
@@ -47,8 +48,23 @@ export CPCGALLOS_GRUB_PASSWORD_HASH='grub.pbkdf2.sha512.10000....'
 make build
 ```
 
-La ISO resultante se escribe en `out/CPCgallOS-0.1.1-amd64.iso`. La contraseña
-no se guarda en Git ni dentro de los scripts.
+La ISO resultante se escribe en `out/CPCgallOS-0.1.2-amd64.iso`. La contraseña
+se entrega únicamente al proceso de construcción; no se guarda en Git ni
+dentro de los scripts.
+
+## Resultado construido de 0.1.2
+
+- Tamaño: 5,385,420,800 bytes (5.02 GB; 5.015 GiB).
+- SHA-256: `258f4da10e5a9a49cd840ba23ce863fb69f19ec9bfcb8c88f921cc4d20438e40`.
+- La inspección confirmó dos entradas GRUB, ambas con `toram`, y PBKDF2 para
+  `root` en el modo persistente.
+- El acceso directo separado de “Gallos C++” no está en la imagen; la carpeta
+  `concursos` y sus plantillas siguen disponibles.
+- La ISO está lista para probarse en VirtualBox. Esta revisión no se ha escrito
+  en ninguna USB.
+
+El detalle reproducible está en
+[docs/BUILD-REPORT-0.1.2.md](docs/BUILD-REPORT-0.1.2.md).
 
 ## Resultado construido de 0.1.1
 

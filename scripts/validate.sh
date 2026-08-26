@@ -24,7 +24,6 @@ required=(
     config/system/cpcgallos-desktop-chromium.desktop
     config/system/cpcgallos-desktop-vscode.desktop
     config/system/cpcgallos-desktop-codeblocks.desktop
-    config/system/cpcgallos-desktop-cpp-template.desktop
     config/system/cpcgallos-desktop-notepad.desktop
     config/system/cpcgallos-desktop-calculator.desktop
     config/system/default-keyboard
@@ -129,7 +128,6 @@ rg -q 'casper-uuid-generic' scripts/build.sh
 rg -q "! -path './boot/grub/i386-pc/eltorito.img'" scripts/build.sh
 rg -q 'XKBLAYOUT="latam"' config/system/default-keyboard
 rg -q 'DivyanshuAgrawal\.competitive-programming-helper' config/vscode/extensions.list
-rg -q 'Desktop/concursos' config/system/cpcgallos-desktop-cpp-template.desktop
 rg -q 'mousepad' config/system/cpcgallos-desktop-notepad.desktop
 rg -q 'galculator' config/system/cpcgallos-desktop-calculator.desktop
 for package in galculator keyboard-configuration mousepad x11-xkb-utils xkb-data; do
